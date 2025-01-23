@@ -1,0 +1,53 @@
+.controls-container {
+    --highlight-width: 0;
+    --highlight-x-pos: 0;
+    --highlight-color: #22c55e;
+  }
+  
+  .controls {
+    display: inline-flex;
+    position: relative;
+    background: #1e293b;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  
+  .controls::before {
+    content: "";
+    position: absolute;
+    width: var(--highlight-width);
+    transform: translateX(var(--highlight-x-pos));
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: var(--highlight-color);
+    transition: transform 0.3s ease;
+  }
+  
+  .segment {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .segment input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .segment label {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    color: #fff;
+    transition: color 0.3s ease;
+  }
+  
+  .segment.active label {
+    color: #000;
+  }
+  
+  
