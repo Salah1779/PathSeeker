@@ -50,7 +50,7 @@ const SegmentControl: React.FC<SegmentedControlProps> = ({ name, segments, callb
               onChange={() => onInputChange(item.value, i)}
               checked={i === activeIndex}
             />
-            <label htmlFor={`${name}-${item.label}`}>{item.label}</label>
+            <label className='text-sm px-4 py-1' htmlFor={`${name}-${item.label}`}>{item.label}</label>
           </div>
         ))}
       </div>

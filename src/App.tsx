@@ -3,7 +3,7 @@ import Grid from './components/Grid';
 import Controls from './components/Controls';
 import { Graph, Vertex, Position, CellType, Algorithm } from './utils/types';
 import { GraphInitializer, cloneGrid, clearVisitedPathCells } from './utils/helpers';
-import { start } from 'repl';
+//import { start } from 'repl';
 
 const GRID_COLS = 25;
 const GRID_ROWS = 25;
