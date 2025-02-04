@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import Grid from './components/Grid';
 import Controls from './components/Controls';
 import { Graph, Vertex, Position, CellType, Algorithm } from './utils/types';
 import { GraphInitializer, cloneGrid, clearVisitedPathCells } from './utils/helpers';
+import { start } from 'repl';
 
 const GRID_COLS = 25;
 const GRID_ROWS = 25;
@@ -18,18 +19,15 @@ const App: React.FC = () => {
   const [isVisualizing, setIsVisualizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    console.log('Initial grid:', grid);
-  }, []);
-      
-  
+
+        
   const updateCell = useCallback(({ x: col, y: row }: Position, type: CellType) => {
     const newGrid = cloneGrid(grid);
     newGrid.vertices[col][row].type = type;
 
     if (type== CellType.Source){ //change the previous source to empty
       newGrid.vertices[startPos.x][startPos.y].type = CellType.Empty;
-      newGrid.vertices[col][row].distance = 'Infinity';
+      newGrid.vertices[startPos.x][startPos.y].distance = 'Infinity';
       newGrid.vertices[col][row].distance = 0;
     }
     else if (type== CellType.Destination) //change the previous destination to empty
