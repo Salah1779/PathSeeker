@@ -1,0 +1,16 @@
+.stats-card {
+    background: linear-gradient(135deg, #1d4497, #120e33);
+    border-radius: 20px;
+  }
+  
+  .icon-wrapper {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  

@@ -3,7 +3,7 @@ import Grid from './components/Grid';
 import Controls from './components/Controls';
 import { Graph, Vertex, Position, CellType, Algorithm } from './utils/types';
 import { GraphInitializer, cloneGrid, clearVisitedPathCells } from './utils/helpers';
-//import { start } from 'repl';
+import AlgorithmStats from './components/AlgorithmStats';
 
 const GRID_COLS = 25;
 const GRID_ROWS = 25;
@@ -17,6 +17,9 @@ const App: React.FC = () => {
   const [algorithm, setAlgorithm] = useState<Algorithm>(Algorithm.DFS);
   const [cellType, setCellType] = useState<CellType>(CellType.Wall);
   const [isVisualizing, setIsVisualizing] = useState(false);
+  const [executionTime, setExecutionTime] = useState<number | '--'>('--');
+  const [pathLength, setPathLength] = useState<number>(0);
+  const [visitedNodes, setVisitedNodes] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
 
@@ -61,6 +64,9 @@ const App: React.FC = () => {
   const handleGenerateMaze = useCallback(async () => {
     try {
       setError(null);
+      setVisitedNodes(0);
+      setPathLength(0);
+      setExecutionTime('--');
       const response = await fetch('http://localhost:8080/generateMaze', {
         method: 'POST',
         headers: {
@@ -68,6 +74,7 @@ const App: React.FC = () => {
         },
         body: JSON.stringify({ grid, startPos, endPos }),
       });
+      console.log("request body for maze:"+JSON.stringify({ grid,startPos, endPos }));
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
@@ -83,6 +90,9 @@ const App: React.FC = () => {
 
 
   const handleClear = useCallback(() => {
+    setVisitedNodes(0);
+    setPathLength(0);
+    setExecutionTime('--');
     const temp: Graph = cloneGrid(initialGrid);
 
     const sourcePos: Position = { x: startPos.x, y: startPos.y };
@@ -106,11 +116,14 @@ const App: React.FC = () => {
     if (isVisualizing || !grid) return; // Empêcher plusieurs visualisations
     setIsVisualizing(true);
     setError(null);
+    setVisitedNodes(0);
+    setPathLength(0);
+    setExecutionTime('--');
     setGrid(clearVisitedPathCells(grid));
   
     const visualizeWithState = async (grid: Graph, path: Vertex[], visited: string[]) => {
-      const VISIT_DELAY = 60; // Augmentez si besoin pour plus de fluidité
-      const PATH_DELAY = 100;
+      const VISIT_DELAY = 40; // Augmentez si besoin pour plus de fluidité
+      const PATH_DELAY = 90;
   
       // Visualize visited cells
       for (let i = 0; i < visited.length; i++) {
@@ -124,7 +137,9 @@ const App: React.FC = () => {
             updatedGrid.vertices[col][row].type = CellType.Visited;
             return updatedGrid;
           });
+          
         }
+        setVisitedNodes(i+1);
       }
   
       // Visualize path
@@ -140,7 +155,9 @@ const App: React.FC = () => {
             updatedGrid.vertices[col][row].type = CellType.Path;
             return updatedGrid;
           });
+            
         }
+        setPathLength(i+1);
       }
     };
   
@@ -152,12 +169,14 @@ const App: React.FC = () => {
         },
         body: JSON.stringify({ grid, algorithm, startPos, endPos }),
       });
+      console.log("request body:"+JSON.stringify({ grid, algorithm, startPos, endPos }));
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
       }
       const result = await response.json();
       console.log(result);
+      setExecutionTime(result.execTime);
       await visualizeWithState(grid, result.path, result.visit);
     } catch (error: any) {
       setError(error.message);
@@ -193,11 +212,19 @@ const App: React.FC = () => {
           </div>
         </div>
       </nav>
-      <main className="max-w-7xl w-[60%] mx-auto flex flex-grow overflow-hidden">
-        <div className="flex-grow p-4 flex items-center justify-center">
+      <main className="max-w-7xl w-[100%] mx-auto flex flex-grow overflow-hidden ">
+        <div className="flex items-center justify-center">
+          <AlgorithmStats
+            executionTime={executionTime}
+            visitedNodes={visitedNodes}
+            pathLength={pathLength}
+          />
+        </div>
+        <div className="mx-auto w-[60%] sm:w-[80%] flex-grow p-4 items-center justify-center ">
           {error && <div className="text-red-500">{error}</div>}
           <Grid grid={grid.vertices} onCellClick={handleCellClick} />
         </div>
+        
       </main>
     </div>
   );
